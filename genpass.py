@@ -40,7 +40,8 @@ class Requires(NamedTuple):
         return word
 
     def charsets(self):
-        charsets = list()  # Use list because order must be deterministic
+        """Returns an ordered list of required charsets (order must be deterministic!)"""
+        charsets = list()
         if self.digit:
             charsets.append(DIGIT)
         if self.special:
@@ -139,7 +140,7 @@ def has(charset, password):
 
 
 def ensure(charset, password):
-    """Deterministically replace a character in S with a special character"""
+    """Deterministically replace a character in password with one from charset"""
     prand = int.from_bytes(sha256(f'salt for {charset} {password}'), 'big')  # pseudo-random based on hash of password
     chars = list(password)
     chars[prand % len(chars)] = charset[prand % len(charset)]
