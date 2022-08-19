@@ -41,10 +41,10 @@ class Requires(NamedTuple):
 
     def charsets(self):
         charsets = list()  # Use list because order must be deterministic
-        if self.special:
-            charsets.append(SPECIAL)
         if self.digit:
             charsets.append(DIGIT)
+        if self.special:
+            charsets.append(SPECIAL)
         if self.upper:
             charsets.append(UPPER)
         if self.lower:
@@ -59,19 +59,19 @@ def main():
     parser = argparse.ArgumentParser(description='Generate a password')
     parser.add_argument('domain', metavar='domain', type=str,
                         help='The domain for which to generate a password')
-    parser.add_argument('-s', dest='special', action='store_const',
-                        const=True, default=False,
-                        help='Require a special character in the output')
+    parser.add_argument('-L', dest='length', type=int, default=DEFAULT_LENGTH)
     parser.add_argument('-d', dest='digit', action='store_const',
                         const=True, default=False,
                         help='Require a digit in the output')
+    parser.add_argument('-s', dest='special', action='store_const',
+                        const=True, default=False,
+                        help='Require a special character in the output')
     parser.add_argument('-u', dest='upper', action='store_const',
                         const=True, default=False,
                         help='Require an upper case in the output')
     parser.add_argument('-l', dest='lower', action='store_const',
                         const=True, default=False,
                         help='Require an upper case in the output')
-    parser.add_argument('-L', dest='length', type=int, default=DEFAULT_LENGTH)
 
     args = parser.parse_args()
     passphrase = getpass.getpass("Passphrase: ")
@@ -122,7 +122,6 @@ def genpass(passphrase, domain, requires):
     password = base64.b64encode(sha256(f'{passphrase} {domain}\n')).decode()
     password = requires.trim(password)
     # Loop because if length is to be maintained, then overwriting can clobber a required character
-    charsets = requires.charsets()
     while not requires.meets_all(password):
         for charset in requires.charsets():
             password = ensure(charset, password)
