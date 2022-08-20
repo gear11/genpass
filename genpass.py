@@ -57,10 +57,11 @@ class Requires(NamedTuple):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate a password')
+    parser = argparse.ArgumentParser(description='Generate a password for the given domain')
     parser.add_argument('domain', metavar='domain', type=str,
                         help='The domain for which to generate a password')
-    parser.add_argument('-L', dest='length', type=int, default=DEFAULT_LENGTH)
+    parser.add_argument('-L', dest='length', type=int, default=DEFAULT_LENGTH,
+                        help='Specify the length of the output password (default 12, specify 0 for max length of ~40)')
     parser.add_argument('-d', dest='digit', action='store_const',
                         const=True, default=False,
                         help='Require a digit in the output')
