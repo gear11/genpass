@@ -72,7 +72,7 @@ def main():
                         help='Require an upper case in the output')
     parser.add_argument('-l', dest='lower', action='store_const',
                         const=True, default=False,
-                        help='Require an upper case in the output')
+                        help='Require an lower case in the output')
 
     args = parser.parse_args()
     passphrase = getpass.getpass("Passphrase: ")
@@ -114,7 +114,7 @@ def save(domain, requires):
 
     try:
         with open(PREFS_FILE, 'w') as file:
-            json.dump(all_domains, file)
+            json.dump(all_domains, file, indent=4)
     except IOError as err:
         print(f'Unable to save prefs for {domain} in {PREFS_FILE}: {err}')
 
