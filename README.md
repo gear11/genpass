@@ -7,11 +7,6 @@ with a master password or passphrase.
 I've used this kind of approach for years, wanting to have long, unguessable passwords but not wanting to use a
 password manager due to a history of hacks (for example: https://www.tomsguide.com/news/password-manager-hacks).
 
-About the only downside I've experienced is that the password for a site is deterministic, so if the site forces you to rotate
-passwords (which NIST actually recommends against: https://www.auditboard.com/blog/nist-password-guidelines/)
-then you need to get a bit hacky, for example by changing the length or using a different domain name
-(for example, for `adp` I might instead use `pay` or for `fidelity` I might instead use `401k`)
-
 ### Key Attributes ###
 
 - Generates a unique password for each domain from a single master password  / pass phrase.
@@ -19,8 +14,15 @@ then you need to get a bit hacky, for example by changing the length or using a 
   script, vs. needing to plug into a cloud-based password manager on every device you use.
 - Stores the options used to generate a password, so you don't have to remember them (see below).
 - Passwords are a base64 encoded SHA-256 hash, so will likely contain upper / lower / digits automatically,
-  but if you are unlucky and the generated password doesn't meet the site requirements, you can force additional requirements.
+  but if you are unlucky and the generated password doesn't meet the site requirements, you can force character types.
 - If you want to reuse passwords for low-risk sites, can just use a generic word like `streaming` as the domain.
+
+### Limitations ###
+
+About the only downside I've experienced is that the password for a site is deterministic, so if the site forces you to rotate
+passwords (which NIST actually recommends against: https://www.auditboard.com/blog/nist-password-guidelines/)
+then you need to get a bit hacky, for example by changing the length or using a different domain name
+(for example, for `adp` I might instead use `pay` or for `fidelity` I might instead use `401k`)
 
 ### Usage ###
 
@@ -40,7 +42,7 @@ then you need to get a bit hacky, for example by changing the length or using a 
     -u          Require an upper case in the output
     -l          Require an lower case in the output
 
-Example usage:
+Example:
 
     % genpass google
     Passphrase: (type in a long, hard to guess passphrase, but can be the same for all domains)
@@ -70,8 +72,8 @@ The options are stored in the local file `.genpass` in JSON format.
 
 ### Disclaimer ###
 
-- Use this at your own risk. I have used this system for years and it has worked well for me but may not for you.
-- If you do use this system, be very careful with your master passphrase. Make it long and unguessable and keep it secret.
+- Use this tool at your own risk. I have used this system for years and it has worked well for me but may not for you.
 - Always secure your important accounts with 2FA.
+- If you do use this system, be very careful with your master passphrase. Make it long and unguessable and keep it secret.
 - I don't plan to do much maintenance here since this is a very stable approach but would consider any pull request that 
   preserves the Key Attributes above.
