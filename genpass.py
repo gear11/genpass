@@ -26,10 +26,12 @@ class Requires(NamedTuple):
     special: bool = False
     upper: bool = False
     lower: bool = False
+    no_special: bool = False
 
     @classmethod
     def from_args(cls, args):
-        return Requires(length=args.length, digit=args.digit, special=args.special, upper=args.upper, lower=args.lower)
+        return Requires(length=args.length, digit=args.digit, special=args.special, upper=args.upper, lower=args.lower,
+                        no_special=args.no_special)
 
     def is_default(self):
         return self == Requires()
@@ -52,8 +54,16 @@ class Requires(NamedTuple):
             charsets.append(LOWER)
         return charsets
 
+    def no_charsets(self):
+        """Returns an ordered list of forbidden charsets (order must be deterministic!)"""
+        charsets = list()
+        if self.no_special:
+            charsets.append(SPECIAL)
+        return charsets
+
     def meets_all(self, word):
-        return all(has(charset, word) for charset in self.charsets())
+        return all(has(charset, word) for charset in self.charsets())\
+               and not any(has(charset, word) for charset in self.no_charsets())
 
 
 def main():
@@ -68,6 +78,9 @@ def main():
     parser.add_argument('-s', dest='special', action='store_const',
                         const=True, default=False,
                         help='Require a special character in the output')
+    parser.add_argument('-S', dest='no_special', action='store_const',
+                        const=True, default=False,
+                        help='Require NO special character in the output')
     parser.add_argument('-u', dest='upper', action='store_const',
                         const=True, default=False,
                         help='Require an upper case in the output')
@@ -127,6 +140,8 @@ def genpass(passphrase, domain, requires):
     while not requires.meets_all(password):
         for charset in requires.charsets():
             password = ensure(charset, password)
+        for charset in requires.no_charsets():
+            password = ensure_no(charset, password)
     return password
 
 
@@ -145,6 +160,15 @@ def ensure(charset, password):
     prand = int.from_bytes(sha256(f'salt for {charset} {password}'), 'big')  # pseudo-random based on hash of password
     chars = list(password)
     chars[prand % len(chars)] = charset[prand % len(charset)]
+    return ''.join(chars)
+
+
+def ensure_no(charset, password):
+    """Deterministically replace each forbidden character with a pseudo-random lower case character"""
+    prand = int.from_bytes(sha256(f'salt for {charset} {password}'), 'big')
+    chars = []
+    for n, c in enumerate(list(password)):
+        chars.append(c if c not in charset else LOWER[(prand + 17 * n) % len(LOWER)])
     return ''.join(chars)
 
 
